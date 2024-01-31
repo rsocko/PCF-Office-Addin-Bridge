@@ -1,0 +1,1 @@
+This folder contains script files that you will leverage inside your Office Add-in html. Specifically eg in a TaskPane add-in you will reference this script so that you can call the postMessage to pass messages to the inner iFrame (containing the PowerApp and using the PCF control for Office.js interop)

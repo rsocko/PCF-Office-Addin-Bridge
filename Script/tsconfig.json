@@ -1,0 +1,29 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "display": "Node 18",
+  
+    "compilerOptions": {
+      "lib": ["es2022"],
+      "module": "commonjs",
+      "target": "es2022",
+  
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+  
+      "outDir": "lib",
+      "declaration": true,
+      "typeRoots": [
+        "../node_modules/@types",
+        "../node_modules/@microsoft"
+      ],
+    },
+
+    "typeAcquisition": {
+      "enable": true,             // Enable automatic fetching of type definitions for detected JavaScript libraries.
+      "include": [ "office-js" ]  // Ensure that the "Office-js" type definition is fetched.
+    },
+  
+    "include": ["src/**/*"]
+  }
