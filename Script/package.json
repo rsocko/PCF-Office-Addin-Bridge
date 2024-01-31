@@ -1,6 +1,6 @@
 {
   "name": "@rysock/pcf-office-bridge",
-  "version": "2.0.24010701",
+  "version": "3.0.24013001",
   "description": "Library supporting code to bridge a PowerApp hosted in an iFrame within an Outlook/Office add-in and passing information from PowerApps to Add-in (and vice versa). This is directly dependent on the PCFOfficeAddinBridge PCF control.",
   "main": "lib/PCFOfficeScript.js",
   "scripts": {
