@@ -13,10 +13,12 @@
     "refreshTypes": "pcf-scripts refreshTypes"
   },
   "dependencies": {
+    
   },
   "devDependencies": {
     "@microsoft/eslint-plugin-power-apps": "^0.2.6",
     "@types/node": "^18.8.2",
+    "@types/office-js": "^1.0.370",
     "@types/powerapps-component-framework": "^1.3.4",
     "@typescript-eslint/eslint-plugin": "^5.39.0",
     "@typescript-eslint/parser": "^5.39.0",
