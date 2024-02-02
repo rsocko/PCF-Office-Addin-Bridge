@@ -1,7 +1,6 @@
 /// <reference path="../node_modules/@types/office-js/index.d.ts" />
 
 /* global Office */ // Required for Office.initialize = function (reason) { ... }
-//older: document, window
 
 //TODO: figure out the proper format for typescript documentation (methods, properties, classes, files, etc.) ?? jsdoc?
 
@@ -45,7 +44,9 @@ namespace PCFOfficeScript {
     interface IOfficeAppAdapter{
         isOfficeObjectReady() : boolean;
         getOfficeObjectMessage() : IOfficeMessage
-        loadOfficeObject() : void
+        loadOfficeObject() : void;
+        loadOfficeObjectAsync() : Promise<void>; //Async method to load office object (eg Mail Item, Page, OneNote notebook/note, etc.)
+        
         //Event when Office Object properties are updated (from async calls to Office API - eg to load Body, etc.)
         onOfficeObjectUpdated?() : void;
     }
@@ -110,9 +111,21 @@ namespace PCFOfficeScript {
                      {
                          console.log("PCFOffice: Add-in / Parent Window: Loading Office Object - via office app-specific load-method");
                          if(this.officeAppAdapter){
-                            this.officeAppAdapter.loadOfficeObject();
 
+                            /* Removed ASYNC call - using original flow
+                            // Call the loadOfficeObjectAsync method
+                            this.officeAppAdapter.loadOfficeObjectAsync().then(() => {
+                                console.log("Reloaded Mail Item (OfficeObject)");
+                                this.sendOfficeObjectIfReady();//this.raiseOfficeObjectUpdated();
+                            }).catch((error) => {
+                                // Handle any errors
+                                console.error(`Failed to load mail item body: ${error}`);
+                            });
+                            */
+                            
+                            this.officeAppAdapter.loadOfficeObject();
                             this.sendOfficeObjectIfReady(); 
+
                             //Return Mock Mail Item
                             //event.source.postMessage(getMockMessageObject(), "*");   
                          }
@@ -169,6 +182,8 @@ namespace PCFOfficeScript {
         }
 
         private raiseOfficeObjectUpdated() : void {
+            console.log("called raiseOfficeObjectUpdated");
+
               //If Event Handler is not defined - don't call it (return from this method)
               if (!this.onOfficeObjectUpdated) return
               //Call the Event Handler
@@ -277,6 +292,41 @@ namespace PCFOfficeScript {
             }
         }
 
+        private getMailItemBodyAsync(): Promise<string> {
+            return new Promise((resolve, reject) => {
+                this.mailItem.body.getAsync(Office.CoercionType.Html, (result) => {
+                    if (result.status === Office.AsyncResultStatus.Succeeded) {
+                        resolve(result.value);
+                    } else {
+                        reject(result.error);
+                    }
+                });
+            });
+        }
+
+        // Wrap the getAsync method in a promise
+        public async loadOfficeObjectAsync(): Promise<void> {
+            let mailItem = Office.context?.mailbox?.item;
+        
+            console.log('PCFOffice: mailbox.item: ' + mailItem);
+        
+            this.mailItemBody = undefined; // reset body in state
+            this.mailItemUniqueBody = undefined; // reset unique body in state
+        
+            //Save the Mail Item to the Add-in State
+            this.mailItem = mailItem;
+
+            try{
+                this.mailItemBody = await this.getMailItemBodyAsync();
+            }
+            catch(error){
+                console.error(`Failed to load mail item body: ${error}`);
+                throw error;
+            }
+        }
+  
+  
+
         //TODO: check if mailBody or uniqueBody is NULL? does this fail?
         public getOfficeObjectMessage() : IOfficeMessage {
             if(this.mailItem) {
@@ -324,6 +374,18 @@ namespace PCFOfficeScript {
             console.log("PCFOffice: Add-in / Parent Window: ItemChanged event received - via itemChanged");
         
             this.loadOfficeObject();
+            this.raiseOfficeObjectUpdated();
+            
+            /*Removed ASYNC call - using original flow
+            // Call the loadOfficeObjectAsync method
+            this.loadOfficeObjectAsync().then(() => {
+                console.log("Reloaded Mail Item (OfficeObject)");
+                this.raiseOfficeObjectUpdated();
+            }).catch((error) => {
+                // Handle any errors
+                console.error(`Failed to load mail item body: ${error}`);
+            });
+            */
         }
     }
 
@@ -373,7 +435,7 @@ namespace PCFOfficeScript {
         bridge.setOfficeAdapter(outlookConnector);
 
         //Setup Event Handler for ItemChanged Event (if the Add-in is pinnable and mail item changes)
-        Office.context.mailbox.addHandlerAsync(Office.EventType.ItemChanged, (asyncResult : Office.AsyncResult<void>) => outlookConnector.itemChanged(asyncResult));
+        //Office.context.mailbox.addHandlerAsync(Office.EventType.ItemChanged, (asyncResult : Office.AsyncResult<void>) => outlookConnector.itemChanged(asyncResult));
 
         if(bridge.pcfReady) {
             //Get the Mail Item
