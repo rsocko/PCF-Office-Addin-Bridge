@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="rysock" constructor="OutlookAddinBridge" version="0.2.231030200" display-name-key="OutlookAddinBridge" description-key="OutlookAddinBridge description" control-type="standard" >
+  <control namespace="rysock" constructor="OutlookAddinBridge" version="1.2.240202100" display-name-key="OutlookAddinBridge" description-key="OutlookAddinBridge description" control-type="standard" >
     <external-service-usage enabled="false">
     </external-service-usage>
     <!-- property node identifies a specific, configurable piece of data that the control expects from CDS -->
