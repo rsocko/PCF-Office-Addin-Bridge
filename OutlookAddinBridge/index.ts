@@ -178,12 +178,15 @@ export class OutlookAddinBridge implements ComponentFramework.StandardControl<II
         if (window.addEventListener) {
             console.log("PCFOffice: Adding event listener for postMessage event to PCF/iframe/PowerApp - to receive messages from Add-in/Office - via window.addEventListener");
             window.addEventListener("message", (event : any) => this.postMessageHandler(event), false);
-        } 
+        }
+        /* 
+        TODO: need to fix since it throws an error building component - not defined on Window object in TypeScript error
         else if(window.attachEvent) 
         {
             console.log("PCFOffice: Adding event listener for postMessage event to PCF/iframe/PowerApp - to receive messages from Add-in/Office - via window.attachEvent");
             window.attachEvent("onmessage", this.postMessageHandler);
         }
+        */
         else
         {
             console.error("Could not add event handler for postMessage");
